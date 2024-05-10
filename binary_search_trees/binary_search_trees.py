@@ -34,6 +34,62 @@ class Tree:
 
         self.height = self.__get_height()
 
+    def contains(self, key):
+        p = self.root
+        while p and p.key != key:
+            p = p.left if key < p.key else p.right
+
+        return p
+
+    def remove(self, z):
+        self.size -= 1
+
+        if not z.left:
+            self.__transplant(z, z.right)
+        elif not z.right:
+            self.__transplant(z, z.left)
+        else:
+            y = self.successor(z)
+
+            if y != z.right:
+                self.__transplant(y, y.right)
+                y.right = z.right
+                y.right.parent = y
+
+            self.__transplant(z, y)
+            y.left = z.left
+            y.left.parent = y
+
+        z = None
+
+        self.height = self.__get_height()
+
+    def successor(self, z):
+        if z.right:
+            p = z.right
+            while p.left:
+                p = p.left
+
+            return p
+        else:
+            p, q = z, z.parent
+            while q and p == q.right:
+                p = q
+                q = q.parent
+
+            return q
+
+    def __transplant(self, x, y):
+        if not x.parent:
+            self.root = y
+        elif x == x.parent.left:
+            x.parent.left = y
+        else:
+            x.parent.right = y
+
+        if y:
+            y.parent = x.parent
+
     def print_tree(self):
 
         def print_tree_internal(r, space_size=0):
@@ -47,7 +103,8 @@ class Tree:
 
         print(f"size = {self.size} / height = {self.height}")
 
-        print_tree_internal(self.root)
+        if self.root:
+            print_tree_internal(self.root)
 
     def __get_height(self):
 
@@ -73,7 +130,7 @@ if __name__ == "__main__":
     t = Tree()
 
     while True:
-        print("1:put 2:remove 3:print > ", end='')
+        print("1:put 2:remove 3:print 4:successor > ", end='')
         op = int(input())
 
         if op == 1:
@@ -82,8 +139,28 @@ if __name__ == "__main__":
 
             t.put(Element(key))
         elif op == 2:
-            pass
+            print("input key > ", end='')
+            key = int(input())
+
+            z = t.contains(key)
+            if not z:
+                print(f"{key} is not found in the tree.")
+            else:
+                t.remove(z)
         elif op == 3:
             t.print_tree()
+        elif op == 4:
+            print("input key > ", end='')
+            key = int(input())
+
+            z = t.contains(key)
+            if not z:
+                print(f"{key} is not found in the tree.")
+            else:
+                succ = t.successor(z)
+                if not succ:
+                    print("successor is None.")
+                else:
+                    print(f"successor = {succ.key}")
         else:
             print("invalid operation")
