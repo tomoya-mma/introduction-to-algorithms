@@ -64,7 +64,7 @@ class Tree:
 
     def contains(self, key):
         p = self.root
-        while p and p.key != key:
+        while p != nil() and p.key != key:
             p = p.left if key < p.key else p.right
 
         return p
@@ -93,15 +93,15 @@ class Tree:
         self.height = self.__get_height()
 
     def successor(self, z):
-        if z.right:
+        if z.right != nil():
             p = z.right
-            while p.left:
+            while p.left != nil():
                 p = p.left
 
             return p
         else:
             p, q = z, z.parent
-            while q and p == q.right:
+            while q != nil() and p == q.right:
                 p = q
                 q = q.parent
 
@@ -144,15 +144,14 @@ class Tree:
         x.parent = y
 
     def __transplant(self, x, y):
-        if not x.parent:
+        if x.parent == nil():
             self.root = y
         elif x == x.parent.left:
             x.parent.left = y
         else:
             x.parent.right = y
 
-        if y:
-            y.parent = x.parent
+        y.parent = x.parent
 
     def __fix_after_insertion(self, z):
         while z.parent.color == Color.RED:
@@ -238,6 +237,15 @@ class Tree:
 if __name__ == "__main__":
     t = Tree()
 
+    t.put(Element(2))
+    t.put(Element(1))
+    t.put(Element(4))
+    t.put(Element(5))
+    t.put(Element(9))
+    t.put(Element(3))
+    t.put(Element(6))
+    t.put(Element(7))
+
     while True:
         print("1:put 2:remove 3:print 4:successor > ", end='')
         op = int(input())
@@ -252,7 +260,7 @@ if __name__ == "__main__":
             key = int(input())
 
             z = t.contains(key)
-            if not z:
+            if z == nil():
                 print(f"{key} is not found in the tree.")
             else:
                 t.remove(z)
@@ -263,11 +271,11 @@ if __name__ == "__main__":
             key = int(input())
 
             z = t.contains(key)
-            if not z:
+            if z == nil():
                 print(f"{key} is not found in the tree.")
             else:
                 succ = t.successor(z)
-                if not succ:
+                if succ == nil():
                     print("successor is None.")
                 else:
                     print(f"successor = {succ.key}")
